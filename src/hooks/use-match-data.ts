@@ -815,7 +815,72 @@ useEffect(() => {
               setMatches(transformedData);
               setFilteredMatches(transformedData);
               setTotalMatchCount(count || 0);
-              calculateStats(transformedData);
+              
+              // For stats calculation, we need to fetch ALL filtered data, not just current page
+              if (count > 0) {
+                try {
+                  // Fetch all matches for stats calculation
+                  const { data: allMatchesForStats } = await fetchMatches(
+                    filters,
+                    1,
+                    count || 10000, // Fetch all matches for stats
+                    mapSortKeyToDbField(sortKey),
+                    sortDirection
+                  );
+                  
+                  if (allMatchesForStats && allMatchesForStats.length > 0) {
+                    // Transform all data for stats calculation
+                    const allTransformedData = allMatchesForStats.map(match => ({
+                      id: match.id?.toString() || Math.random().toString(),
+                      date: match.match_time || new Date().toISOString(),
+                      home: {
+                        id: match.home_team || 'home',
+                        name: match.home_team || 'Home Team',
+                        logo: ''
+                      },
+                      away: {
+                        id: match.away_team || 'away', 
+                        name: match.away_team || 'Away Team',
+                        logo: ''
+                      },
+                      htScore: {
+                        home: match.half_time_home_goals || 0,
+                        away: match.half_time_away_goals || 0
+                      },
+                      ftScore: {
+                        home: match.full_time_home_goals || 0,
+                        away: match.full_time_away_goals || 0
+                      },
+                      btts: match.btts_computed || false,
+                      comeback: match.comeback_computed || false,
+                      league: match.league,
+                      country: match.country,
+                      season: match.season,
+                      match_status: match.match_status,
+                      result_computed: match.result_computed,
+                      // Include original fields for compatibility
+                      home_team: match.home_team,
+                      away_team: match.away_team,
+                      home_team_id: match.home_team_id,
+                      away_team_id: match.away_team_id,
+                      half_time_home_goals: match.half_time_home_goals,
+                      half_time_away_goals: match.half_time_away_goals,
+                      full_time_home_goals: match.full_time_home_goals,
+                      full_time_away_goals: match.full_time_away_goals,
+                      btts_computed: match.btts_computed,
+                      comeback_computed: match.comeback_computed
+                    }));
+                    
+                    calculateStats(allTransformedData);
+                  }
+                } catch (statsError) {
+                  console.error('Error fetching stats data:', statsError);
+                  // Fallback to calculating stats from current page data
+                  calculateStats(transformedData);
+                }
+              } else {
+                calculateStats([]);
+              }
             }
           } catch (fetchError) {
             console.error('Error during fetch operation:', fetchError);
