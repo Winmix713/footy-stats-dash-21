@@ -768,7 +768,7 @@ useEffect(() => {
                 sortDirection
               );
               
-              console.log(`Received ${data.length} matches, total count: ${count}`);
+              console.log(`Received all matches, total count: ${count}`);
               
               // Transform Supabase data to Match format
               const transformedData = data.map(match => ({
