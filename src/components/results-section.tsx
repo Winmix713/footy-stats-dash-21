@@ -3,7 +3,7 @@ import { Button, Card, Tooltip, Spinner } from '@heroui/react';
 import { Icon } from '@iconify/react';
 import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell } from '@heroui/react';
 import { Match, SortKey, SortDirection } from '../types/match';
-import { fetchMatches } from '../lib/supabase';
+import { supabase } from '@/integrations/supabase/client';
 import { useMatchData } from '../hooks/use-match-data';
 
 interface ResultsSectionProps {

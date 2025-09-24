@@ -1,8 +1,91 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { Match, Team, MatchStats, SortKey, SortDirection } from '../types/match';
 import { addToast } from '@heroui/react';
-import { supabase, fetchMatches, MatchFilters as SupabaseMatchFilters } from '../lib/supabase';
+import { supabase } from '@/integrations/supabase/client';
 import { mockMatches } from '../data/mock-data';
+
+// Define types and functions that were previously in lib/supabase.ts
+export interface SupabaseMatchFilters {
+  home_team?: string;
+  away_team?: string;
+  btts?: boolean;
+  comeback?: boolean;
+  startDate?: string;
+  endDate?: string;
+  league?: string;
+  country?: string;
+  season?: string;
+  minHomeGoals?: number;
+  maxHomeGoals?: number;
+  minAwayGoals?: number;
+  maxAwayGoals?: number;
+  result?: string;
+}
+
+// Function to fetch matches from Supabase
+export const fetchMatches = async (
+  filters: SupabaseMatchFilters = {},
+  page: number = 1,
+  pageSize: number = 10,
+  sortKey: string = 'match_time',
+  sortDirection: 'asc' | 'desc' = 'desc'
+): Promise<{ data: any[], count: number }> => {
+  try {
+    if (!supabase) {
+      console.error('Supabase client is not initialized');
+      return { data: [], count: 0 };
+    }
+    
+    let query = supabase
+      .from('matches')
+      .select('*')
+      .order(sortKey === 'match_time' ? 'match_time' : 'id', { ascending: sortDirection === 'asc' });
+
+    // Apply filters
+    if (filters.home_team) query = query.eq('home_team', filters.home_team);
+    if (filters.away_team) query = query.eq('away_team', filters.away_team);
+    if (filters.btts !== undefined) query = query.eq('btts_computed', filters.btts);
+    if (filters.comeback !== undefined) query = query.eq('comeback_computed', filters.comeback);
+    if (filters.startDate) query = query.gte('match_time', filters.startDate);
+    if (filters.endDate) query = query.lte('match_time', filters.endDate);
+    if (filters.minHomeGoals !== undefined) query = query.gte('full_time_home_goals', filters.minHomeGoals);
+    if (filters.maxHomeGoals !== undefined) query = query.lte('full_time_home_goals', filters.maxHomeGoals);
+    if (filters.minAwayGoals !== undefined) query = query.gte('full_time_away_goals', filters.minAwayGoals);
+    if (filters.maxAwayGoals !== undefined) query = query.lte('full_time_away_goals', filters.maxAwayGoals);
+    if (filters.result) query = query.eq('result_computed', filters.result);
+
+    // Get total count with same filters
+    let countQuery = supabase.from('matches').select('*', { count: 'exact', head: true });
+    if (filters.home_team) countQuery = countQuery.eq('home_team', filters.home_team);
+    if (filters.away_team) countQuery = countQuery.eq('away_team', filters.away_team);
+    if (filters.btts !== undefined) countQuery = countQuery.eq('btts_computed', filters.btts);
+    if (filters.comeback !== undefined) countQuery = countQuery.eq('comeback_computed', filters.comeback);
+    if (filters.startDate) countQuery = countQuery.gte('match_time', filters.startDate);
+    if (filters.endDate) countQuery = countQuery.lte('match_time', filters.endDate);
+    if (filters.minHomeGoals !== undefined) countQuery = countQuery.gte('full_time_home_goals', filters.minHomeGoals);
+    if (filters.maxHomeGoals !== undefined) countQuery = countQuery.lte('full_time_home_goals', filters.maxHomeGoals);
+    if (filters.minAwayGoals !== undefined) countQuery = countQuery.gte('full_time_away_goals', filters.minAwayGoals);
+    if (filters.maxAwayGoals !== undefined) countQuery = countQuery.lte('full_time_away_goals', filters.maxAwayGoals);
+    if (filters.result) countQuery = countQuery.eq('result_computed', filters.result);
+    
+    const { count } = await countQuery;
+
+    // Apply pagination
+    const startIndex = (page - 1) * pageSize;
+    query = query.range(startIndex, startIndex + pageSize - 1);
+
+    const { data, error } = await query;
+    if (error) {
+      console.error('Error fetching matches:', error);
+      throw error;
+    }
+
+    return { data: data || [], count: count || 0 };
+  } catch (error) {
+    console.error('Error in fetchMatches:', error);
+    return { data: [], count: 0 };
+  }
+};
 
 // Create a context for match data
 interface MatchDataContextType {
