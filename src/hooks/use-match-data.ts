@@ -108,8 +108,9 @@ export const MatchDataProvider: React.FC<MatchDataProviderProps> = ({ children }
   
   const [isExtendedStatsModalOpen, setIsExtendedStatsModalOpen] = useState(false);
   
-  // REMOVE ALL THE DUPLICATE CONNECTION CHECK useEffect HOOKS
-// Replace them with this SINGLE, simple connection check
+  // Add missing state declarations for Supabase connection
+  const [isSupabaseConnected, setIsSupabaseConnected] = useState<boolean | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
 useEffect(() => {
   const checkSupabaseConnection = async () => {
@@ -157,106 +158,7 @@ useEffect(() => {
 // 2. The one starting with "Alternative approach - delayed initialization check"  
 // 3. The one starting with "Recommended approach - create a proper Supabase client initialization check"
 // Keep ONLY the one above.
-// Remove the other duplicate useEffect hooks for Supabase connection checking
-
-// Alternative approach - delayed initialization check
-useEffect(() => {
-  // Add a small delay to ensure client initialization
-  const timer = setTimeout(() => {
-    const checkSupabaseConnection = async () => {
-      try {
-        console.log('Supabase client:', supabase); // Debug log
-        
-        if (!supabase) {
-          console.error('Supabase client is null');
-          setIsSupabaseConnected(false);
-          setErrorMessage('Supabase kliens nincs inicializálva. Minta adatok használata.');
-          return;
-        }
-
-        // Test the connection
-        const { data, error } = await supabase
-          .from('matches')
-          .select('id')
-          .limit(1);
-        
-        if (error) {
-          console.error('Supabase connection error:', error);
-          setIsSupabaseConnected(false);
-          setErrorMessage(`Adatbázis kapcsolódási hiba: ${error.message}. Minta adatok használata.`);
-        } else {
-          console.log('Supabase connection successful');
-          setIsSupabaseConnected(true);
-          setErrorMessage(null);
-        }
-      } catch (error) {
-        console.error('Error checking Supabase connection:', error);
-        setIsSupabaseConnected(false);
-        setErrorMessage('Adatbázis kapcsolódási hiba. Minta adatok használata.');
-      }
-    };
-
-    checkSupabaseConnection();
-  }, 100); // 100ms delay
-
-  return () => clearTimeout(timer);
-}, []);
-
-// Recommended approach - create a proper Supabase client initialization check
-useEffect(() => {
-  const initializeAndCheckSupabase = async () => {
-    try {
-      // Check if running in browser environment
-      if (typeof window === 'undefined') {
-        console.warn('Supabase client not available on server side');
-        setIsSupabaseConnected(false);
-        setErrorMessage('Szerver oldali renderelés. Minta adatok használata.');
-        return;
-      }
-
-      // Check environment variables
-      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-      const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-      
-      if (!supabaseUrl || !supabaseKey) {
-        console.error('Missing Supabase environment variables');
-        setIsSupabaseConnected(false);
-        setErrorMessage('Supabase környezeti változók hiányoznak. Minta adatok használata.');
-        return;
-      }
-
-      // Check if supabase client exists and is properly initialized
-      if (!supabase || typeof supabase.from !== 'function') {
-        console.error('Supabase client is not properly initialized');
-        setIsSupabaseConnected(false);
-        setErrorMessage('Supabase kliens nincs megfelelően inicializálva. Minta adatok használata.');
-        return;
-      }
-
-      // Test the actual connection
-      const { data, error } = await supabase
-        .from('matches')
-        .select('id')
-        .limit(1);
-      
-      if (error) {
-        console.error('Supabase connection error:', error);
-        setIsSupabaseConnected(false);
-        setErrorMessage(`Adatbázis kapcsolódási hiba: ${error.message}. Minta adatok használata.`);
-      } else {
-        console.log('Supabase connection successful');
-        setIsSupabaseConnected(true);
-        setErrorMessage(null);
-      }
-    } catch (error) {
-      console.error('Error during Supabase initialization check:', error);
-      setIsSupabaseConnected(false);
-      setErrorMessage('Supabase inicializálási hiba. Minta adatok használata.');
-    }
-  };
-
-  initializeAndCheckSupabase();
-}, []);
+// Duplicate connection checks removed - keeping only the single one above
 
   // Extract unique teams from Supabase data with alphabetical sorting
   const homeTeams = useMemo(() => {
