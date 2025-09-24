@@ -769,10 +769,53 @@ useEffect(() => {
               );
               
               console.log(`Received ${data.length} matches, total count: ${count}`);
-              setMatches(data);
-              setFilteredMatches(data);
+              
+              // Transform Supabase data to Match format
+              const transformedData = data.map(match => ({
+                id: match.id?.toString() || Math.random().toString(),
+                date: match.match_time || new Date().toISOString(),
+                home: {
+                  id: match.home_team || 'home',
+                  name: match.home_team || 'Home Team',
+                  logo: ''
+                },
+                away: {
+                  id: match.away_team || 'away', 
+                  name: match.away_team || 'Away Team',
+                  logo: ''
+                },
+                htScore: {
+                  home: match.half_time_home_goals || 0,
+                  away: match.half_time_away_goals || 0
+                },
+                ftScore: {
+                  home: match.full_time_home_goals || 0,
+                  away: match.full_time_away_goals || 0
+                },
+                btts: match.btts_computed || false,
+                comeback: match.comeback_computed || false,
+                league: match.league,
+                country: match.country,
+                season: match.season,
+                match_status: match.match_status,
+                result_computed: match.result_computed,
+                // Include original fields for compatibility
+                home_team: match.home_team,
+                away_team: match.away_team,
+                home_team_id: match.home_team_id,
+                away_team_id: match.away_team_id,
+                half_time_home_goals: match.half_time_home_goals,
+                half_time_away_goals: match.half_time_away_goals,
+                full_time_home_goals: match.full_time_home_goals,
+                full_time_away_goals: match.full_time_away_goals,
+                btts_computed: match.btts_computed,
+                comeback_computed: match.comeback_computed
+              }));
+              
+              setMatches(transformedData);
+              setFilteredMatches(transformedData);
               setTotalMatchCount(count || 0);
-              calculateStats(data);
+              calculateStats(transformedData);
             }
           } catch (fetchError) {
             console.error('Error during fetch operation:', fetchError);
