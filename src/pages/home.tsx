@@ -68,31 +68,13 @@ const HomePage: React.FC = () => {
         selectedAwayTeam={selectedAwayTeam}
         selectedBTTS={selectedBTTS}
         selectedComeback={selectedComeback}
-        startDate={startDate}
-        endDate={endDate}
         onHomeTeamChange={setSelectedHomeTeam}
         onAwayTeamChange={setSelectedAwayTeam}
         onBTTSChange={setSelectedBTTS}
         onComebackChange={setSelectedComeback}
-        onStartDateChange={setStartDate}
-        onEndDateChange={setEndDate}
         onApplyFilters={applyFilters}
         onResetFilters={resetFilters}
         onExportCSV={exportToCSV}
-        
-        // Add new filter props
-        minHomeGoals={minHomeGoals}
-        maxHomeGoals={maxHomeGoals}
-        minAwayGoals={minAwayGoals}
-        maxAwayGoals={maxAwayGoals}
-        resultType={resultType}
-        htftCombination={htftCombination}
-        onMinHomeGoalsChange={setMinHomeGoals}
-        onMaxHomeGoalsChange={setMaxHomeGoals}
-        onMinAwayGoalsChange={setMinAwayGoals}
-        onMaxAwayGoalsChange={setMaxAwayGoals}
-        onResultTypeChange={setResultType}
-        onHtftCombinationChange={setHtftCombination}
       />
 
       <StatsSection 
