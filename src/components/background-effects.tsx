@@ -25,6 +25,8 @@ export const BackgroundEffects: React.FC = () => {
             id="aura-spline"
             title="3D Background Animation"
             loading="lazy"
+            sandbox="allow-scripts allow-same-origin allow-forms"
+            allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
           />
         ) : (
           <div className="w-full h-full bg-background flex items-center justify-center">
