@@ -23,6 +23,115 @@ export const spanishTeams = [
 // Remove the old teams array since we're now using the exported spanishTeams
 // const teams = [ ... ];
 
+// Specific matches from the uploaded image
+const specificMatches: Match[] = [
+  {
+    id: 'match-specific-1',
+    match_time: '23:59:00',
+    home_team: 'Madrid Fehér',
+    away_team: 'San Sebastian',
+    half_time_home_goals: 0,
+    half_time_away_goals: 0,
+    full_time_home_goals: 1,
+    full_time_away_goals: 0,
+    match_status: 'completed',
+    btts_computed: false,
+    comeback_computed: false,
+    result_computed: 'H',
+    home: spanishTeams.find(t => t.name === 'Madrid Fehér')!,
+    away: spanishTeams.find(t => t.name === 'San Sebastian')!,
+    htScore: { home: 0, away: 0 },
+    ftScore: { home: 1, away: 0 },
+    btts: false,
+    comeback: false,
+    date: new Date('2024-01-20T23:59:00')
+  },
+  {
+    id: 'match-specific-2',
+    match_time: '23:59:00',
+    home_team: 'Barcelona',
+    away_team: 'Girona',
+    half_time_home_goals: 1,
+    half_time_away_goals: 0,
+    full_time_home_goals: 3,
+    full_time_away_goals: 2,
+    match_status: 'completed',
+    btts_computed: true,
+    comeback_computed: false,
+    result_computed: 'H',
+    home: spanishTeams.find(t => t.name === 'Barcelona')!,
+    away: spanishTeams.find(t => t.name === 'Girona')!,
+    htScore: { home: 1, away: 0 },
+    ftScore: { home: 3, away: 2 },
+    btts: true,
+    comeback: false,
+    date: new Date('2024-01-20T23:59:00')
+  },
+  {
+    id: 'match-specific-3',
+    match_time: '23:59:00',
+    home_team: 'Sevilla Piros',
+    away_team: 'Las Palmas',
+    half_time_home_goals: 0,
+    half_time_away_goals: 0,
+    full_time_home_goals: 2,
+    full_time_away_goals: 1,
+    match_status: 'completed',
+    btts_computed: true,
+    comeback_computed: false,
+    result_computed: 'H',
+    home: spanishTeams.find(t => t.name === 'Sevilla Piros')!,
+    away: spanishTeams.find(t => t.name === 'Las Palmas')!,
+    htScore: { home: 0, away: 0 },
+    ftScore: { home: 2, away: 1 },
+    btts: true,
+    comeback: false,
+    date: new Date('2024-01-20T23:59:00')
+  },
+  {
+    id: 'match-specific-4',
+    match_time: '23:51:00',
+    home_team: 'Getafe',
+    away_team: 'Villarreal',
+    half_time_home_goals: 0,
+    half_time_away_goals: 0,
+    full_time_home_goals: 2,
+    full_time_away_goals: 0,
+    match_status: 'completed',
+    btts_computed: false,
+    comeback_computed: false,
+    result_computed: 'H',
+    home: spanishTeams.find(t => t.name === 'Getafe')!,
+    away: spanishTeams.find(t => t.name === 'Villarreal')!,
+    htScore: { home: 0, away: 0 },
+    ftScore: { home: 2, away: 0 },
+    btts: false,
+    comeback: false,
+    date: new Date('2024-01-20T23:51:00')
+  },
+  {
+    id: 'match-specific-5',
+    match_time: '23:51:00',
+    home_team: 'Las Palmas',
+    away_team: 'Osasuna',
+    half_time_home_goals: 1,
+    half_time_away_goals: 0,
+    full_time_home_goals: 1,
+    full_time_away_goals: 0,
+    match_status: 'completed',
+    btts_computed: false,
+    comeback_computed: false,
+    result_computed: 'H',
+    home: spanishTeams.find(t => t.name === 'Las Palmas')!,
+    away: spanishTeams.find(t => t.name === 'Osasuna')!,
+    htScore: { home: 1, away: 0 },
+    ftScore: { home: 1, away: 0 },
+    btts: false,
+    comeback: false,
+    date: new Date('2024-01-20T23:51:00')
+  }
+];
+
 const generateRandomMatches = (count: number): Match[] => {
   // Generate more realistic match data
   const matches: Match[] = [];
@@ -105,4 +214,7 @@ const generateRandomMatches = (count: number): Match[] => {
 };
 
 // Generate 200 random matches instead of 5000 for better performance
-export const mockMatches = generateRandomMatches(200);
+const randomMatches = generateRandomMatches(195);
+
+// Combine specific matches with random matches
+export const mockMatches = [...specificMatches, ...randomMatches];
